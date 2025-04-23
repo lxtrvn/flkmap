@@ -1,1 +1,2 @@
-bluetooth.csv should be whatever wigle csv output.   set the boundary box and run the python.   it will query overpass for the alpr cams and remove any duplicate entries from the wigle output.   the final reault should be a set of points not already in the database 
+To remove duplicates with radius based filter, use see radius folder. 
+To radius filter and specify tags, see tags_radius folder.  

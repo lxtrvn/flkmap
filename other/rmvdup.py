@@ -9,8 +9,8 @@ def read_bluetooth_csv(file_path):
         reader = csv.DictReader(csvfile)
         for row in reader:
             bluetooth_data.append({
-                'trilat': round(float(row['trilat']), 5),
-                'trilong': round(float(row['trilong']), 5),
+                'trilat': float(row['trilat']),
+                'trilong': float(row['trilong']),
                 'ssid': row['ssid'],
                 'qos': int(row['qos']),
                 'transid': row['transid'],
@@ -33,7 +33,7 @@ def read_bluetooth_csv(file_path):
             })
     return bluetooth_data
 
-# Function to fetch and parse Overpass API response for ALPR nodes
+# Function to fetch and parse Overpass API response for Bluetooth nodes
 def fetch_overpass_data(bbox):
     overpass_url = "http://overpass-api.de/api/interpreter"
     overpass_query = f"""
@@ -45,8 +45,8 @@ def fetch_overpass_data(bbox):
     root = ET.fromstring(response.content)
     overpass_nodes = []
     for node in root.findall('node'):
-        lat = round(float(node.attrib['lat']), 5)
-        lon = round(float(node.attrib['lon']), 5)
+        lat = float(node.attrib['lat'])
+        lon = float(node.attrib['lon'])
         overpass_nodes.append((lat, lon))
     return overpass_nodes
 
