@@ -42,6 +42,11 @@ def fetch_overpass_data(bbox):
     out;
     """
     response = requests.get(overpass_url, params={'data': overpass_query})
+    
+    # Save the Overpass API response to a file
+    with open('overpass_response.xml', 'wb') as xmlfile:
+        xmlfile.write(response.content)
+    
     root = ET.fromstring(response.content)
     overpass_nodes = []
     for node in root.findall('node'):
@@ -76,7 +81,7 @@ def save_filtered_data(filtered_data, output_file):
 def main():
     bluetooth_file = 'bluetooth2.csv'  # Path to your Bluetooth CSV file
     output_file = 'filtered_bluetooth_data.csv'  # Path to save the filtered data
-    bbox = "27.44, -87.48, 29.45, -80.47"  # Example bounding box: lat_min-south, lon_min-west, lat_max-north, lon_max-east
+    bbox = "25.44, -80.48, 46.45, -123.47"  # Example bounding box: lat_min-south, lon_min-west, lat_max-north, lon_max-east
 
     bluetooth_data = read_bluetooth_csv(bluetooth_file)
     overpass_nodes = fetch_overpass_data(bbox)
