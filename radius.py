@@ -3,6 +3,7 @@ import requests
 import urllib.parse
 import webbrowser
 import xml.etree.ElementTree as ET
+import argparse
 
 # Function to read Bluetooth CSV file
 def read_bluetooth_csv(file_path):
@@ -66,11 +67,17 @@ def get_bounding_box_for_nodes(nodes):
 # Function to make Overpass API request
 def overpass_request(query):
     url = "http://overpass-api.de/api/interpreter"
-    response = requests.get(
-        url, params={"data": query}, headers={"User-Agent": "DeFlock/1.0"}
-    )
-    response.raise_for_status()
-    return response.json()["elements"]
+    try:
+        response = requests.get(
+            url, params={"data": query}, headers={"User-Agent": "DeFlock/1.0"}
+        )
+        response.raise_for_status()
+        return response.json()["elements"]
+    except requests.exceptions.HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}")
+    except Exception as err:
+        print(f"An error occurred: {err}")
+    return []
 
 # Function to get ALPR nodes in bounding box
 def get_alprs_in_bounding_box(bbox):
@@ -132,12 +139,17 @@ def save_filtered_data(filtered_data, output_file):
 
 # Main function
 def main():
-    bluetooth_file = 'bluetooth2.csv'  # Path to your Bluetooth CSV file
-    output_file = 'filtered_bluetooth_data.csv'  # Path to save the filtered data
-    
-    # Define radius for duplicate detection (in degrees)
-    radius = 0.0001  # Example radius, adjust as needed
-    
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description="Process Bluetooth data and filter out duplicates based on Overpass API.")
+    parser.add_argument("bluetooth_file", type=str, help="Path to the Bluetooth CSV file")
+    parser.add_argument("--radius", type=float, default=0.0001, help="Radius for duplicate detection in degrees (default: 0.0001)")
+    parser.add_argument("--output", type=str, default='filtered_bluetooth_data.csv', help="Path to save the filtered data (default: filtered_bluetooth_data.csv)")
+    args = parser.parse_args()
+
+    bluetooth_file = args.bluetooth_file
+    output_file = args.output  # Path to save the filtered data
+    radius = args.radius  # Radius for duplicate detection
+
     # Read Bluetooth data
     bluetooth_data = read_bluetooth_csv(bluetooth_file)
     
